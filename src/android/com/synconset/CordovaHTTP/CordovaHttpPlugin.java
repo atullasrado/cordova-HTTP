@@ -107,6 +107,26 @@ public class CordovaHttpPlugin extends CordovaPlugin {
             String filePath = args.getString(3);
             CordovaHttpDownload download = new CordovaHttpDownload(urlString, paramsMap, headersMap, callbackContext, filePath);
             cordova.getThreadPool().execute(download);
+        } else if (action.equals("scanImage")) {
+            String TAG = "MyActivity";
+            try {
+                JSONObject params = new JSONObject();
+                params.put("_operation", "scanImage");
+                params.put("_apikey", "84983d97c71c3debd59a96f57e766ceb");
+                String urlString = "https://ocr.vtiger.com/vtigerocr/api.php";
+
+                JSONObject headers = args.getJSONObject(1);
+                HashMap<?, ?> paramsMap = this.getMapFromJSONObject(params);
+                HashMap<String, String> headersMap = this.addToMap(this.globalHeaders, headers);
+                String filePath = args.getString(2);
+                String name = args.getString(3);
+
+                CordovaHttpUpload upload = new CordovaHttpUpload(urlString, paramsMap, headersMap, callbackContext, filePath, name);
+                cordova.getThreadPool().execute(upload);
+
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+            }
         } else {
             return false;
         }

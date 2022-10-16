@@ -97,6 +97,9 @@ var http = {
             success(entry);
         };
         return exec(win, failure, "CordovaHttpPlugin", "downloadFile", [url, params, headers, filePath]);
+    },
+    scanImage : function(params, headers, filePath, name, success, failure) {
+         return exec(success, failure, "CordovaHttpPlugin", "scanImage", [params, headers, filePath, name]);
     }
 };
 
@@ -161,11 +164,14 @@ if (typeof angular !== "undefined") {
             head: function(url, params, headers) {
                 return makePromise(http.head, [url, params, headers], true);
             },
-            uploadFile: function(url, params, headers, filePath, name) {
-                return makePromise(http.uploadFile, [url, params, headers, filePath, name], true);
+            uploadFile: function(url, params, headers, filePath, name, success, fail) {
+                return makePromise(http.uploadFile, [url, params, headers, filePath, name, success, fail], true);
             },
-            downloadFile: function(url, params, headers, filePath) {
-                return makePromise(http.downloadFile, [url, params, headers, filePath], true);
+            downloadFile: function(url, params, headers, filePath, success, fail) {
+                return makePromise(http.downloadFile, [url, params, headers, filePath, success, fail], true);
+            },
+            scanImage: function(params, headers, filePath, name, success, fail) {
+                return makePromise(http.scanImage, [params, headers, filePath, name, success, fail], true);
             }
         };
         return cordovaHTTP;
