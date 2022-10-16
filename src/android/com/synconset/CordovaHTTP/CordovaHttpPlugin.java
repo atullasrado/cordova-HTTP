@@ -117,7 +117,7 @@ public class CordovaHttpPlugin extends CordovaPlugin {
 
                 JSONObject headers = args.getJSONObject(1);
                 HashMap<?, ?> paramsMap = this.getMapFromJSONObject(params);
-                HashMap<String, String> headersMap = this.addToMap(this.globalHeaders, headers);
+                HashMap<String, String> headersMap = this.getStringMapFromJSONObject(headers);
                 String filePath = args.getString(2);
                 String name = args.getString(3);
 
