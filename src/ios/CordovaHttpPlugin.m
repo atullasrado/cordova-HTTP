@@ -189,18 +189,20 @@
 }
 
 - (void)scanImage:(CDVInvokedUrlCommand*)command {
-    HttpManager *manager = [HttpManager sharedClient];
-    NSString *url = [NSString stringWithFormat:@"http://ocr.vtiger.com/vtigerocr/api.php"];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    manager.securityPolicy = securityPolicy;
+    NSString *url = [NSString stringWithFormat:@"https://ocr.vtiger.com/vtigerocr/api.php"];
     NSDictionary *parameters = [command.arguments objectAtIndex:0];
     [parameters setValue:@"84983d97c71c3debd59a96f57e766ceb" forKey:@"_apikey"];
     NSDictionary *headers = [command.arguments objectAtIndex:1];
     [headers setValue:@"v2" forKey:@"X-API-VERSION"];
     NSString *filePath = [command.arguments objectAtIndex: 2];
     NSString *name = [command.arguments objectAtIndex: 3];
-    NSURL *fileURL = [NSURL URLWithString:filePath];
 
-    [self setRequestHeaders: headers];
-
+    NSURL *fileURL = [NSURL URLWithString: filePath];
+    
+    [self setRequestHeaders: headers forManager: manager];
+    
     CordovaHttpPlugin* __weak weakSelf = self;
     manager.responseSerializer = [TextResponseSerializer serializer];
     [manager POST:url parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
@@ -209,12 +211,12 @@
         if (error) {
             NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
             [dictionary setObject:[NSNumber numberWithInt:500] forKey:@"status"];
-            [dictionary setObject:@"Could not add image to post body." forKey:@"error"];
+            [dictionary setObject:@"Could not add file to post body." forKey:@"error"];
             CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:dictionary];
             [weakSelf.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             return;
         }
-    } success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    } progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
         [self setResults: dictionary withTask: task];
         [dictionary setObject:responseObject forKey:@"data"];
